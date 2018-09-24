@@ -1,21 +1,23 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DotNet.Repo.VersionControl
 {
     public class GitVersionControlSystem : VersionControlSystem
     {
-        public static readonly VersionControlSystem Instance = new GitVersionControlSystem();
-
-        private readonly Tool _git = Tool.Locate("git");
+        private readonly Tool _git;
         private static readonly Lazy<Task<string>> _gitignoreContent = new Lazy<Task<string>>(LoadGitIgnore);
+        private readonly ILogger<GitVersionControlSystem> _logger;
 
         public override bool IsInstalled => _git != null;
         public override string Name => "git";
 
-        private GitVersionControlSystem()
+        public GitVersionControlSystem(ILoggerFactory loggerFactory)
         {
+            _git = Tool.Locate("git", loggerFactory);
+            _logger = loggerFactory.CreateLogger<GitVersionControlSystem>();
         }
 
         public override async Task<bool> TryInitializeAsync(string repositoryRoot)
@@ -26,6 +28,7 @@ namespace DotNet.Repo.VersionControl
             }
 
             // Init the repo
+            _logger.LogInformation("Creating git repository in '{RepositoryRoot}'", repositoryRoot);
             var result = await _git.Arguments("init")
                 .InDirectory(repositoryRoot)
                 .ExecuteAsync();
@@ -36,6 +39,7 @@ namespace DotNet.Repo.VersionControl
 
             // Drop the gitignore
             // TODO: Consider getting the latest version of this from https://github.com/github/gitignore
+            _logger.LogDebug("Adding .gitignore file");
             var gitignore = Path.Combine(repositoryRoot, ".gitignore");
             using (var writer = new StreamWriter(gitignore))
             {

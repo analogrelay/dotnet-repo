@@ -13,8 +13,10 @@ namespace DotNet.Repo
         public const string Description = "Create a new repository.";
         private readonly IConsole _console;
         private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger<NewCommand> _logger;
+        private readonly VersionControlManager _versionControlManager;
 
-        [Option("--vcs <VERSION_CONTROL_SYSTEM>", Description = "The version control system to use.")]
+        [Option("--vcs <VERSION_CONTROL_SYSTEM>", Description = "The version control system to use. Defaults to 'git', use 'none' to disable version control support.")]
         public string VcsType { get; set; }
 
         [Option("-p|--path <PATH>", Description = "The path in which to create the repository. Defaults to '[current directory]/[name]'.")]
@@ -23,10 +25,12 @@ namespace DotNet.Repo
         [Argument(0, "<NAME>", Description = "The name of the repository to create. Will also be used as the solution/project name by default")]
         public string RepositoryName { get; set; }
 
-        public NewCommand(IConsole console, ILoggerFactory loggerFactory)
+        public NewCommand(IConsole console, ILoggerFactory loggerFactory, VersionControlManager versionControlManager)
         {
             _console = console;
             _loggerFactory = loggerFactory;
+            _logger = _loggerFactory.CreateLogger<NewCommand>();
+            _versionControlManager = versionControlManager;
         }
 
         public async Task<int> OnExecuteAsync()
@@ -39,7 +43,7 @@ namespace DotNet.Repo
             }
 
             // Identify VCS system
-            var vcs = string.IsNullOrEmpty(VcsType) ? GitVersionControlSystem.Instance : VersionControlSystem.GetVersionControlSystem(VcsType);
+            var vcs = _versionControlManager.GetVersionControlSystem(string.IsNullOrEmpty(VcsType) ? "git" : VcsType);
             if (vcs == null)
             {
                 throw new CommandLineException($"Unknown version control system: {VcsType}");
@@ -47,7 +51,7 @@ namespace DotNet.Repo
 
             if (!vcs.IsInstalled)
             {
-                _console.Error.WriteLine($"warning: version control system '{VcsType}' is not installed.");
+                _logger.LogWarning("Version control system '{VcsType}' is not installed.", VcsType);
                 vcs = VersionControlSystem.None;
             }
 
@@ -58,7 +62,7 @@ namespace DotNet.Repo
                 throw new CommandLineException($"Directory already exists: {RepositoryRoot}.");
             }
 
-            _console.WriteLine($"Creating .NET Project Repository at {RepositoryRoot} ...");
+            _logger.LogInformation("Creating .NET Project Repository at {RepositoryRoot} ...", RepositoryRoot);
             Directory.CreateDirectory(RepositoryRoot);
 
             // Put a sln there
@@ -87,7 +91,7 @@ namespace DotNet.Repo
             // Do version control things
             if (!await vcs.TryInitializeAsync(RepositoryRoot))
             {
-                _console.Error.WriteLine("Failed to initialize version control repository.");
+                _logger.LogError("Failed to initialize version control repository.");
                 return 1;
             }
 
