@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using DotNet.Repo.Resources;
 using Microsoft.Extensions.Logging;
 
 namespace DotNet.Repo.Build

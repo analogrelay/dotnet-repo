@@ -20,6 +20,7 @@ namespace DotNet.Repo
         private readonly SolutionManager _solutionManager;
         private readonly BuildSystem _buildSystem;
         private readonly StrongNameModule _strongNameModule;
+        private readonly SourceLinkModule _sourceLinkModule;
 
         [Option("--vcs <VERSION_CONTROL_SYSTEM>", Description = "The version control system to use. Defaults to 'git', use 'none' to disable version control support.")]
         public string VcsType { get; set; }
@@ -30,7 +31,7 @@ namespace DotNet.Repo
         [Argument(0, "<NAME>", Description = "The name of the repository to create. Will also be used as the solution/project name by default")]
         public string RepositoryName { get; set; }
 
-        public NewCommand(IConsole console, ILoggerFactory loggerFactory, VersionControlManager versionControlManager, SolutionManager solutionManager, BuildSystem buildSystem, StrongNameModule strongNameModule)
+        public NewCommand(IConsole console, ILoggerFactory loggerFactory, VersionControlManager versionControlManager, SolutionManager solutionManager, BuildSystem buildSystem, StrongNameModule strongNameModule, SourceLinkModule sourceLinkModule)
         {
             _console = console;
             _loggerFactory = loggerFactory;
@@ -39,6 +40,7 @@ namespace DotNet.Repo
             _solutionManager = solutionManager;
             _buildSystem = buildSystem;
             _strongNameModule = strongNameModule;
+            _sourceLinkModule = sourceLinkModule;
         }
 
         public async Task<int> OnExecuteAsync()
@@ -83,8 +85,9 @@ namespace DotNet.Repo
             // Configure the build
             await _buildSystem.InitializeAsync(RepositoryRoot);
 
-            // Install strong naming
-            await _strongNameModule.InstallAsync(Path.Combine(RepositoryRoot, "build", "modules", "strongname"));
+            // Install Modules
+            await _strongNameModule.InstallAsync(Path.Combine(RepositoryRoot, "build", "modules", "StrongName"));
+            await _sourceLinkModule.InstallAsync(Path.Combine(RepositoryRoot, "build", "modules", "SourceLink"));
 
             // Do version control things
             await vcs.InitializeAsync(RepositoryRoot);

@@ -1,7 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace DotNet.Repo.Resources
+namespace DotNet.Repo
 {
     internal static class ResourceFiles
     {

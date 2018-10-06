@@ -2,19 +2,17 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNet.Repo.Resources;
 using Microsoft.Extensions.Logging;
 
 namespace DotNet.Repo.VersionControl
 {
     public class GitVersionControlSystem : VersionControlSystem
     {
-        private readonly Tool _git;
         private static readonly Lazy<Task<string>> _gitignoreContent = new Lazy<Task<string>>(() => ResourceFiles.LoadResourceFile("VisualStudio.gitignore"));
         private readonly ILogger<GitVersionControlSystem> _logger;
         private readonly ToolSet _tools;
 
-        public override bool IsInstalled => _git != null;
+        public override bool IsInstalled => _tools.Git != null;
         public override string Name => "git";
 
         public GitVersionControlSystem(ToolSet tools, ILoggerFactory loggerFactory)

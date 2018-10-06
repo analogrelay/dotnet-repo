@@ -68,6 +68,7 @@ namespace DotNet.Repo
             services.AddSingleton<SolutionManager>();
             services.AddSingleton<BuildSystem>();
             services.AddSingleton<StrongNameModule>();
+            services.AddSingleton<SourceLinkModule>();
 
             services.AddSingleton<VersionControlManager>();
             services.AddSingleton<VersionControlSystem, GitVersionControlSystem>();

@@ -1,0 +1,22 @@
+<Project>
+    <PropertyGroup>
+        <!-- Configure SourceLink options here! -->
+
+        <!-- Include Repository information in the NuGet manifest -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+        <!--
+            This will embed any source files that are NOT in your source control system directly into the PDB.
+            This is important if you have any generated code, since generated code won't exist on your public source control page!
+        -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+        <!--
+            Embed the PDB in the NuGet package so it's always available. You can remove this if you are publishing your symbols to a symbol server.
+        -->
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="[[SOURCELINK_PACKAGE_ID]]" Version="[[SOURCELINK_PACKAGE_VERSION]]" />
+    </ItemGroup>
+</Project>

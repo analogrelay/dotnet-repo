@@ -9,24 +9,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Resources\Directory.Build.props.template" />
-        <None Remove="Resources\Directory.Build.targets.template" />
-        <None Remove="Resources\Modules\StrongName\Module.props" />
-        <None Remove="Resources\Modules\StrongName\README.md" />
-        <None Remove="Resources\VisualStudio.gitignore" />
+        <None Remove="Resources\**\*" />
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Resources\Modules\StrongName\Module.props" />
-      <EmbeddedResource Include="Resources\Modules\StrongName\README.md">
-        <SubType>Component</SubType>
-      </EmbeddedResource>
+        <EmbeddedResource Include="Resources\**\*" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Resources\Directory.Build.props.template" />
-        <EmbeddedResource Include="Resources\Directory.Build.targets.template" />
-        <EmbeddedResource Include="Resources\VisualStudio.gitignore" />
+      <EmbeddedResource Include="ResourceFiles.cs" />
     </ItemGroup>
 
     <ItemGroup>

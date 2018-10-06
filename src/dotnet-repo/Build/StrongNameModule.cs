@@ -2,14 +2,13 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using DotNet.Repo.Resources;
 using Microsoft.Extensions.Logging;
 
 namespace DotNet.Repo.Build
 {
     public class StrongNameModule
     {
-        private static readonly Lazy<Task<string>> _moduleProps = new Lazy<Task<string>>(() => ResourceFiles.LoadResourceFile("Modules", "StrongName", "Module.props"));
+        private static readonly Lazy<Task<string>> _moduleProps = new Lazy<Task<string>>(() => ResourceFiles.LoadResourceFile("Modules", "StrongName", "module.props"));
         private static readonly Lazy<Task<string>> _readme = new Lazy<Task<string>>(() => ResourceFiles.LoadResourceFile("Modules", "StrongName", "README.md"));
         private readonly ILogger<StrongNameModule> _logger;
 
@@ -28,7 +27,7 @@ namespace DotNet.Repo.Build
             }
 
             // Drop the build module
-            var propsFile = Path.Combine(moduleDirectory, "Module.props");
+            var propsFile = Path.Combine(moduleDirectory, "module.props");
             var readmeFile = Path.Combine(moduleDirectory, "README.md");
             var snkFile = Path.Combine(moduleDirectory, "StrongNameKey.snk");
 
