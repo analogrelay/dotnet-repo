@@ -1,0 +1,28 @@
+<Project>
+    <PropertyGroup>
+        <!--
+            This value represents the primary part of your version.
+            Change this after every non-preview release!
+        -->
+        <VersionPrefix>1.0.0</VersionPrefix>
+
+        <!--
+            This value represents the "prerelease tag" used for a prerelease build. Delete the content to ship a
+            non-preview release. Change this value after every preview release
+        -->
+        <PrereleaseTag>alpha1</PrereleaseTag>
+
+        <!--
+            This variable controls the build number. When building locally it will be constant, but if your CI process sets the 'BuildNumber' property,
+            it will be used instead. The word "dev" sorts as "higher" than any numeric build number in SemVer, so this will always be higher than your pre-release CI builds.
+        -->
+        <BuildNumber Condition="'$(BuildNumber)' == ''">dev</BuildNumber>
+
+        <!--
+            This calculates the full version number.
+            If you want to calculate versions yourself, just set the 'PackageVersion' in your CI.
+        -->
+        <PackageVersion Condition="'$(PackageVersion)' == '' And '$(PrereleaseTag)' == ''">$(VersionPrefix)</PackageVersion>
+        <PackageVersion Condition="'$(PackageVersion)' == '' And '$(PrereleaseTag)' != ''">$(VersionPrefix)-$(PrereleaseTag)-$(BuildNumber)</PackageVersion>
+    </PropertyGroup>
+</Project>

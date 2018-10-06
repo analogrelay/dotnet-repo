@@ -17,6 +17,6 @@
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="[[SOURCELINK_PACKAGE_ID]]" Version="[[SOURCELINK_PACKAGE_VERSION]]" />
+        <PackageReference Include="[[SOURCELINK_PACKAGE_ID]]" Version="[[SOURCELINK_PACKAGE_VERSION]]" PrivateAssets="All" />
     </ItemGroup>
 </Project>

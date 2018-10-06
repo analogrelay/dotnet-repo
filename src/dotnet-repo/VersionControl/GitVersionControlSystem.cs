@@ -53,11 +53,13 @@ namespace DotNet.Repo.VersionControl
                     // Do a 'git add -A' to catch all the new files
                     _logger.LogTrace("Adding all files to pending commit...");
                     await _tools.Git.Arguments("add", "-A")
+                        .InDirectory(repositoryRoot)
                         .ExecuteAsync(throwOnFailure: true);
                 }
 
                 _logger.LogTrace("Committing...");
                 await _tools.Git.Arguments("commit", "-F", file)
+                    .InDirectory(repositoryRoot)
                     .ExecuteAsync(throwOnFailure: true);
                 _logger.LogTrace("Committed.");
             }

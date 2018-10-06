@@ -16,7 +16,7 @@ namespace DotNet.Repo.Build
         }
 
 
-        public async Task InstallAsync(string moduleDirectory)
+        public async Task InstallAsync(string rootDirectory, string moduleDirectory)
         {
             _logger.LogInformation("Installing SourceLink build module...");
             if (!Directory.Exists(moduleDirectory))

@@ -1,4 +1,5 @@
 <Project>
     <!-- Avoid changing this file so that it can be auto-generated/auto-updated. -->
+    <Import Project="$(MSBuildThisFileDirectory)/build/common.targets" />
     <Import Project="$(MSBuildThisFileDirectory)/build/modules/*/module.targets" />
 </Project>

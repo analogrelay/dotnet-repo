@@ -86,8 +86,8 @@ namespace DotNet.Repo
             await _buildSystem.InitializeAsync(RepositoryRoot);
 
             // Install Modules
-            await _strongNameModule.InstallAsync(Path.Combine(RepositoryRoot, "build", "modules", "StrongName"));
-            await _sourceLinkModule.InstallAsync(Path.Combine(RepositoryRoot, "build", "modules", "SourceLink"));
+            await _strongNameModule.InstallAsync(RepositoryRoot, Path.Combine(RepositoryRoot, "build", "modules", "StrongName"));
+            await _sourceLinkModule.InstallAsync(RepositoryRoot, Path.Combine(RepositoryRoot, "build", "modules", "SourceLink"));
 
             // Do version control things
             await vcs.InitializeAsync(RepositoryRoot);
