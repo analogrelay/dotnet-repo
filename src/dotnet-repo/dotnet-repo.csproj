@@ -5,13 +5,27 @@
         <TargetFramework>netcoreapp2.1</TargetFramework>
         <RootNamespace>DotNet.Repo</RootNamespace>
         <PackAsTool>true</PackAsTool>
+        <LangVersion>7.1</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
+        <None Remove="Resources\Directory.Build.props.template" />
+        <None Remove="Resources\Directory.Build.targets.template" />
+        <None Remove="Resources\Modules\StrongName\Module.props" />
+        <None Remove="Resources\Modules\StrongName\README.md" />
         <None Remove="Resources\VisualStudio.gitignore" />
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="Resources\Modules\StrongName\Module.props" />
+      <EmbeddedResource Include="Resources\Modules\StrongName\README.md">
+        <SubType>Component</SubType>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Directory.Build.props.template" />
+        <EmbeddedResource Include="Resources\Directory.Build.targets.template" />
         <EmbeddedResource Include="Resources\VisualStudio.gitignore" />
     </ItemGroup>
 
@@ -19,6 +33,12 @@
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.5" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System">
+        <HintPath>System</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

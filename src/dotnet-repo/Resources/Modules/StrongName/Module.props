@@ -1,0 +1,6 @@
+<Project>
+    <PropertyGroup>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/StrongNameKey.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+</Project>

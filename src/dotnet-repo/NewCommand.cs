@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using DotNet.Repo.Build;
 using DotNet.Repo.VersionControl;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Logging;
@@ -11,10 +12,14 @@ namespace DotNet.Repo
     {
         public const string Name = "new";
         public const string Description = "Create a new repository.";
+
         private readonly IConsole _console;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<NewCommand> _logger;
         private readonly VersionControlManager _versionControlManager;
+        private readonly SolutionManager _solutionManager;
+        private readonly BuildSystem _buildSystem;
+        private readonly StrongNameModule _strongNameModule;
 
         [Option("--vcs <VERSION_CONTROL_SYSTEM>", Description = "The version control system to use. Defaults to 'git', use 'none' to disable version control support.")]
         public string VcsType { get; set; }
@@ -25,12 +30,15 @@ namespace DotNet.Repo
         [Argument(0, "<NAME>", Description = "The name of the repository to create. Will also be used as the solution/project name by default")]
         public string RepositoryName { get; set; }
 
-        public NewCommand(IConsole console, ILoggerFactory loggerFactory, VersionControlManager versionControlManager)
+        public NewCommand(IConsole console, ILoggerFactory loggerFactory, VersionControlManager versionControlManager, SolutionManager solutionManager, BuildSystem buildSystem, StrongNameModule strongNameModule)
         {
             _console = console;
             _loggerFactory = loggerFactory;
             _logger = _loggerFactory.CreateLogger<NewCommand>();
             _versionControlManager = versionControlManager;
+            _solutionManager = solutionManager;
+            _buildSystem = buildSystem;
+            _strongNameModule = strongNameModule;
         }
 
         public async Task<int> OnExecuteAsync()
@@ -66,34 +74,23 @@ namespace DotNet.Repo
             Directory.CreateDirectory(RepositoryRoot);
 
             // Put a sln there
-            await dotnet.Arguments("new", "sln")
-                .InDirectory(RepositoryRoot)
-                .ExecuteAsync(throwOnFailure: true);
+            var solutionPath = Path.Combine(RepositoryRoot, $"{RepositoryName}.sln");
+            await _solutionManager.CreateSolutionAsync(solutionPath);
 
-            // Make a 'src' dir
-            var srcDir = Path.Combine(RepositoryRoot, "src");
-            Directory.CreateDirectory(srcDir);
+            // Add a new class library to the solution
+            await _solutionManager.AddNewProjectAsync(solutionPath, "src", RepositoryName, "classlib");
 
-            // Make a dir for the project
-            var projectDir = Path.Combine(srcDir, RepositoryName);
-            Directory.CreateDirectory(projectDir);
+            // Configure the build
+            await _buildSystem.InitializeAsync(RepositoryRoot);
 
-            // Stick a lib there
-            await dotnet.Arguments("new", "classlib")
-                .InDirectory(projectDir)
-                .ExecuteAsync(throwOnFailure: true);
-
-            // Add it to the sln
-            await dotnet.Arguments("sln", "add", projectDir)
-                .InDirectory(RepositoryRoot)
-                .ExecuteAsync(throwOnFailure: true);
+            // Install strong naming
+            await _strongNameModule.InstallAsync(Path.Combine(RepositoryRoot, "build", "modules", "strongname"));
 
             // Do version control things
-            if (!await vcs.TryInitializeAsync(RepositoryRoot))
-            {
-                _logger.LogError("Failed to initialize version control repository.");
-                return 1;
-            }
+            await vcs.InitializeAsync(RepositoryRoot);
+
+            // Commit the changes
+            await vcs.CommitAsync(RepositoryRoot, "Initial template");
 
             return 0;
         }

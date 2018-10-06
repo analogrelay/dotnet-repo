@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using DotNet.Repo.Build;
 using DotNet.Repo.VersionControl;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,6 +63,11 @@ namespace DotNet.Repo
                 logging.AddCliConsole();
                 logging.SetMinimumLevel(LogLevel.Information);
             });
+
+            services.AddSingleton<ToolSet>();
+            services.AddSingleton<SolutionManager>();
+            services.AddSingleton<BuildSystem>();
+            services.AddSingleton<StrongNameModule>();
 
             services.AddSingleton<VersionControlManager>();
             services.AddSingleton<VersionControlSystem, GitVersionControlSystem>();

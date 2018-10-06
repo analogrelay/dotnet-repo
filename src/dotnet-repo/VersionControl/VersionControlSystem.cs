@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNet.Repo.VersionControl
@@ -9,7 +10,8 @@ namespace DotNet.Repo.VersionControl
         public abstract string Name { get; }
         public abstract bool IsInstalled { get; }
 
-        public abstract Task<bool> TryInitializeAsync(string repositoryRoot);
+        public abstract Task InitializeAsync(string repositoryRoot, CancellationToken cancellationToken = default);
+        public abstract Task CommitAsync(string repositoryRoot, string message, bool addAll = true, CancellationToken cancellationToken = default);
 
         private class NoVersionControlSystem : VersionControlSystem
         {
@@ -22,10 +24,16 @@ namespace DotNet.Repo.VersionControl
             {
             }
 
-            public override Task<bool> TryInitializeAsync(string repositoryRoot)
+            public override Task InitializeAsync(string repositoryRoot, CancellationToken cancellationToken = default)
             {
                 // Do nothing
-                return Task.FromResult(true);
+                return Task.CompletedTask;
+            }
+
+            public override Task CommitAsync(string repositoryRoot, string message, bool addAll = true, CancellationToken cancellationToken = default)
+            {
+                // Do nothing
+                return Task.CompletedTask;
             }
         }
     }
